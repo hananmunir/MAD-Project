@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import React from "react";
+import Icon from "react-native-vector-icons/EvilIcons";
 
 export default function Navbar() {
   return (
@@ -9,8 +10,9 @@ export default function Navbar() {
         style={styles.image}
       />
       <Text style={styles.text}>Logo</Text>
+
       <TouchableOpacity>
-        <Text style={styles.text}>Hey</Text>
+        <Icon name='search' style={styles.icon} />
       </TouchableOpacity>
     </View>
   );
@@ -35,5 +37,9 @@ const styles = StyleSheet.create({
   },
   text: {
     color: "#fff",
+  },
+  icon: {
+    color: "#fff",
+    fontSize: 40,
   },
 });

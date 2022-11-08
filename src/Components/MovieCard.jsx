@@ -1,7 +1,7 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
 
-export default function MovieCard() {
+export default function MovieCard({ movie }) {
   return (
     <TouchableOpacity style={styles.container}>
       <Image
@@ -10,8 +10,12 @@ export default function MovieCard() {
         resizeMode='cover'
       />
       <View style={styles.textContainer}>
-        <Text style={[styles.text, styles.heading]}>Movie Name</Text>
-        <Text style={[styles.text, styles.subHeading]}>Movie Description</Text>
+        <Text style={[styles.text, styles.heading]}>
+          {movie.title || movie.name}
+        </Text>
+        <Text style={[styles.text, styles.subHeading]}>
+          {movie.overview.slice(0, 30)}...
+        </Text>
       </View>
     </TouchableOpacity>
   );
@@ -26,7 +30,7 @@ const styles = StyleSheet.create({
     textAlign: "right",
     marginLeft: 8,
     marginRight: 8,
-    height: 300,
+    height: "100%",
     borderRadius: 30,
   },
   image: {
@@ -36,11 +40,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   textContainer: {
-    alignSelf: "center",
+    paddingHorizontal: 20,
   },
   text: {
     color: "#fff",
     textAlign: "left",
+    alignSelf: "center",
+    width: 140,
   },
   heading: {
     fontSize: 17,
@@ -49,5 +55,6 @@ const styles = StyleSheet.create({
   subHeading: {
     fontSize: 12,
     color: "gray",
+    marginBottom: 20,
   },
 });

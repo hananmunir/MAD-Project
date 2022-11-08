@@ -1,8 +1,20 @@
 import { View, Text, ScrollView, StyleSheet } from "react-native";
 import React from "react";
+import axios from "../utils/axios";
+import categories from "../utils/requests";
 import MovieCard from "./MovieCard";
+import { useEffect } from "react";
+import { another } from "../utils/axios";
+export default function MovieRow({ category, movies }) {
+  const [movieList, setMovieList] = React.useState([]);
+  useEffect(() => {
+    const getMovies = async () => {
+      const response = await axios.get(movies);
+      setMovieList(response.data.results.slice(0, 10));
+    };
+    getMovies();
+  }, []);
 
-export default function MovieRow({ category }) {
   return (
     <View style={styles.container}>
       <Text style={styles.text}> {category}</Text>
@@ -13,12 +25,9 @@ export default function MovieRow({ category }) {
         horizontal
         showsHorizontalScrollIndicator={false}
       >
-        <MovieCard />
-        <MovieCard />
-        <MovieCard />
-        <MovieCard />
-        <MovieCard />
-        <MovieCard />
+        {movieList?.map((movie, index) => (
+          <MovieCard key={index} movie={movie} />
+        ))}
       </ScrollView>
     </View>
   );

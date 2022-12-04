@@ -200,6 +200,7 @@ const styles = StyleSheet.create({
   },
   text: {
     color: "#fff",
+    fontFamily: "Poppins_400Regular",
   },
   inputContainer: {
     height: 50,

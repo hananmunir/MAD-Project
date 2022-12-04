@@ -23,7 +23,8 @@ const styles = StyleSheet.create({
   },
   text: {
     color: "#fff",
-    fontFamily: "Roboto",
+
+    fontFamily: "Poppins_400Regular",
     fontSize: 22,
   },
   image: {

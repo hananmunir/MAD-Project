@@ -1,10 +1,8 @@
 import { View, Text, ScrollView, StyleSheet } from "react-native";
 import React from "react";
 import axios from "../utils/axios";
-import categories from "../utils/requests";
 import MovieCard from "./MovieCard";
 import { useEffect } from "react";
-import { another } from "../utils/axios";
 export default function MovieRow({ category, movies }) {
   const [movieList, setMovieList] = React.useState([]);
   useEffect(() => {
@@ -43,5 +41,6 @@ const styles = StyleSheet.create({
   text: {
     color: "#fff",
     fontSize: 20,
+    fontFamily: "Poppins_400Regular",
   },
 });

@@ -1,6 +1,6 @@
-import { View, Text } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import React from "react";
-import Auth from "../Components/Auth";
+import MovieListCard from "../Components/MovieListCard";
 import {
   Poppins_100Thin,
   Poppins_100Thin_Italic,
@@ -24,8 +24,7 @@ import {
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 
-SplashScreen.preventAutoHideAsync();
-export default function AuthScreen() {
+export default function ListScreen() {
   const [fontsLoaded] = useFonts({
     Poppins_400Regular,
   });
@@ -41,10 +40,18 @@ export default function AuthScreen() {
   }
   return (
     <View
-      style={{ backgroundColor: "#010101", height: "100%" }}
+      style={{ backgroundColor: "#000", flex: 1 }}
       onLayout={onLayoutRootView}
     >
-      <Auth />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <MovieListCard />
+        <MovieListCard />
+        <MovieListCard />
+        <MovieListCard />
+        <MovieListCard />
+        <MovieListCard />
+        <MovieListCard />
+      </ScrollView>
     </View>
   );
 }

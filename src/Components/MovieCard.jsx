@@ -19,11 +19,15 @@ export default function MovieCard({ movie, recent }) {
   const handleClick = () => {
     if (recent) {
       console.log("recent");
+      //navigate to outer navigator
+      console.log(navigator.getState());
+
       navigator.navigate("Home", {
+        params: { movie: movie },
         screen: "Movie",
-        initial: false,
       });
     } else {
+      console.log("Here");
       navigator.navigate("Movie", { movie });
     }
   };
@@ -35,14 +39,15 @@ export default function MovieCard({ movie, recent }) {
       <Image
         style={styles.image}
         source={{
-          uri: BASE_URL + movie?.poster_path,
+          uri: BASE_URL + movie?.poster_path || movie?.backdrop_path,
         }}
-        resizeMode='center'
       />
 
       <View style={styles.textContainer}>
-        <Text style={[styles.text, styles.heading]}>{getMovieName()}</Text>
-        <Text style={[styles.text, styles.subHeading]}>
+        <Text numberOfLines={1} style={[styles.text, styles.heading]}>
+          {getMovieName()}
+        </Text>
+        <Text numberOfLines={2} style={[styles.text, styles.subHeading]}>
           {movie.overview.slice(0, 40)}...
         </Text>
       </View>
@@ -66,7 +71,7 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   image: {
-    width: 180,
+    width: "auto",
     height: 200,
     borderRadius: 30,
     marginBottom: 20,

@@ -8,10 +8,10 @@ import * as SplashScreen from "expo-splash-screen";
 import { Poppins_400Regular } from "@expo-google-fonts/poppins";
 
 export default function RecentShowsScreen() {
+  const [recentShows, setRecentShows] = useState();
   const [fontsLoaded] = useFonts({
     Poppins_400Regular,
   });
-  const [recentShows, setRecentShows] = useState();
 
   useEffect(() => {
     const getMovies = async () => {

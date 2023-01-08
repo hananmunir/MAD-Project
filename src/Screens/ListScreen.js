@@ -1,34 +1,18 @@
-import { View, Text, ScrollView } from "react-native";
 import React from "react";
-import MovieListCard from "../Components/MovieListCard";
-import {
-  Poppins_100Thin,
-  Poppins_100Thin_Italic,
-  Poppins_200ExtraLight,
-  Poppins_200ExtraLight_Italic,
-  Poppins_300Light,
-  Poppins_300Light_Italic,
-  Poppins_400Regular,
-  Poppins_400Regular_Italic,
-  Poppins_500Medium,
-  Poppins_500Medium_Italic,
-  Poppins_600SemiBold,
-  Poppins_600SemiBold_Italic,
-  Poppins_700Bold,
-  Poppins_700Bold_Italic,
-  Poppins_800ExtraBold,
-  Poppins_800ExtraBold_Italic,
-  Poppins_900Black,
-  Poppins_900Black_Italic,
-} from "@expo-google-fonts/poppins";
+import { View, Text, ScrollView } from "react-native";
+import { Poppins_400Regular } from "@expo-google-fonts/poppins";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
+import { useSelector } from "react-redux";
+import MovieListCard from "../Components/MovieListCard";
+import { selectListMovies } from "../Features/ListSlice";
 
 export default function ListScreen() {
   const [fontsLoaded] = useFonts({
     Poppins_400Regular,
   });
 
+  const movies = useSelector(selectListMovies);
   const onLayoutRootView = React.useCallback(async () => {
     if (fontsLoaded) {
       await SplashScreen.hideAsync();
@@ -44,13 +28,20 @@ export default function ListScreen() {
       onLayout={onLayoutRootView}
     >
       <ScrollView showsVerticalScrollIndicator={false}>
-        <MovieListCard />
-        <MovieListCard />
-        <MovieListCard />
-        <MovieListCard />
-        <MovieListCard />
-        <MovieListCard />
-        <MovieListCard />
+        {movies.length > 0 ? (
+          movies.map((movie) => <MovieListCard movie={movie} key={movie.id} />)
+        ) : (
+          <Text
+            style={{
+              color: "#fff",
+              fontSize: 20,
+              textAlign: "center",
+              marginTop: 20,
+            }}
+          >
+            No Movies in List
+          </Text>
+        )}
       </ScrollView>
     </View>
   );

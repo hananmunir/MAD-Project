@@ -8,9 +8,8 @@ import {
 } from "react-native";
 import { auth } from "../utils/firebase";
 import React from "react";
-
-//facebook icon
-import { FontAwesome, Feather } from "react-native-vector-icons";
+import { useToast } from "react-native-toast-notifications";
+import { FontAwesome, MaterialCommunityIcons } from "react-native-vector-icons";
 
 let userModal = {
   username: "",
@@ -20,38 +19,84 @@ let userModal = {
 };
 
 export default function Auth() {
+  const toast = useToast();
   const [user, setUser] = React.useState(userModal);
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
   const [isLogin, setIsLogin] = React.useState(true);
 
+  const isLoginValid = () => {
+    return user.email.trim() === "" || user.password.trim() === "";
+  };
+  const isRegisterValid = () => {
+    return (
+      user.email.trim() === "" ||
+      user.password.trim() === "" ||
+      user.username.trim() === "" ||
+      user.confirmPassword.trim() === ""
+    );
+  };
   const handleRegister = () => {
-    console.log("Register");
-    console.log(user);
-    setUser(userModal);
+    if (user.password !== user.confirmPassword)
+      toast.show("Passwords don't match", {
+        type: "danger",
+        placement: "top",
+        duration: 3000,
+      });
     auth
       .createUserWithEmailAndPassword(user.email.trim(), user.password)
       .then((userCredential) => {
+        //show toast
+        toast.show("Account created successfully", {
+          type: "success",
+          placement: "top",
+          duration: 3000,
+        });
+
         // Signed in
-        var user = userCredential.user;
-        console.log(user.email);
+        var signedInUser = userCredential.user;
+
+        // update user profile
+        signedInUser.updateProfile({
+          displayName: user.username,
+        });
+
+        setUser(userModal);
+        setIsLogin(true);
         // ...
       })
       .catch((error) => {
         console.log(error);
+        toast.show(error.message, {
+          type: "danger",
+          placement: "top",
+          duration: 3000,
+        });
       });
   };
   const handleLogin = () => {
     console.log("Login");
-    setUser(userModal);
+
     auth
       .signInWithEmailAndPassword(user.email, user.password)
       .then((user) => {
+        //toast
+        toast.show("Login successful", {
+          type: "success",
+          placement: "top",
+          duration: 3000,
+        });
+
         console.log(user);
-        setUser(user);
+        //navigation.navigate("Landing");
+        setUser(userModal);
       })
       .catch((error) => {
         console.log(error);
+
+        toast.show(error.message, {
+          type: "danger",
+          placement: "top",
+          duration: 3000,
+        });
       });
   };
   return (
@@ -72,68 +117,55 @@ export default function Auth() {
             <TextInput
               style={styles.input}
               placeholder='Username'
+              placeholderTextColor={"#808080"}
               keyboardType='ascii-capable'
               onChangeText={(text) => setUser({ ...user, username: text })}
               value={user.username}
             />
-            <FontAwesome name='user-o' color='#000' size={20} />
+            <FontAwesome name='user-o' color='#808080' size={20} />
           </View>
         ) : null}
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
             placeholder='Email'
+            placeholderTextColor={"#808080"}
             keyboardType='ascii-capable'
             onChangeText={(text) => setUser({ ...user, email: text })}
             value={user.email}
+            // remove border
           />
-          <FontAwesome name='user-o' color='#000' size={20} />
+          <MaterialCommunityIcons
+            name='email-outline'
+            color='#808080'
+            size={20}
+          />
         </View>
 
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
             placeholder='Password'
+            placeholderTextColor={"#808080"}
             keyboardType='ascii-capable'
-            secureTextEntry={!showPassword}
+            secureTextEntry={true}
             onChangeText={(text) => setUser({ ...user, password: text })}
             value={user.password}
           />
-          {showPassword ? (
-            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-              <Feather name='eye' color='#000' size={20} />
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-              <Feather name='eye-off' color='#000' size={20} />
-            </TouchableOpacity>
-          )}
         </View>
         {!isLogin ? (
           <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
               placeholder='Confirm Password'
+              placeholderTextColor={"#808080"}
               keyboardType='ascii-capable'
-              secureTextEntry={!showConfirmPassword}
+              secureTextEntry={true}
               onChangeText={(text) =>
                 setUser({ ...user, confirmPassword: text })
               }
               value={user.confirmPassword}
             />
-            {showConfirmPassword ? (
-              <TouchableOpacity
-                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-              >
-                <Feather name='eye' color='#000' size={20} />
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-              >
-                <Feather name='eye-off' color='#000' size={20} />
-              </TouchableOpacity>
-            )}
           </View>
         ) : null}
         {isLogin ? (
@@ -143,6 +175,7 @@ export default function Auth() {
       <TouchableOpacity
         style={styles.button}
         onPress={() => (isLogin ? handleLogin() : handleRegister())}
+        disabled={isLogin ? isLoginValid() : isRegisterValid()}
       >
         <Text style={styles.text}>{isLogin ? "Log In" : "Register"}</Text>
       </TouchableOpacity>
@@ -180,8 +213,11 @@ export default function Auth() {
         <Text style={styles.text}>
           {isLogin ? "Don't have an account?" : "Already have an account?"}
           <Text
-            style={[styles.text, { color: "#7DE5ED" }]}
-            onPress={() => setIsLogin(!isLogin)}
+            style={[styles.text, { color: "#EB1D36" }]}
+            onPress={() => {
+              setUser(userModal);
+              setIsLogin(!isLogin);
+            }}
           >
             {isLogin ? " Sign Up" : " Log In"}
           </Text>
@@ -217,6 +253,8 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
+    outlineStyle: "none",
+    backgroundColor: "#fff",
   },
   heading: {
     fontSize: 30,
@@ -239,7 +277,7 @@ const styles = StyleSheet.create({
     marginTop: 13,
   },
   button: {
-    backgroundColor: "lightblue",
+    backgroundColor: "#EB1D36",
     padding: 15,
     width: "90%",
     marginVertical: 25,

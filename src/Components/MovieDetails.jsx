@@ -1,8 +1,15 @@
+import React, { useEffect, useState } from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
-import React from "react";
-import { AntDesign } from "react-native-vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
+import { useDispatch, useSelector } from "react-redux";
 import { useRoute } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
+import { useToast } from "react-native-toast-notifications";
+import {
+  selectListMovies,
+  addToList,
+  removeFromList,
+} from "../Features/ListSlice";
+import { AntDesign } from "react-native-vector-icons";
 const BASE_URL = "https://image.tmdb.org/t/p/original";
 // const movie = {
 //   backdrop_path: "/iHSwvRVsRyxpX7FE7GbviaDvgGZ.jpg",
@@ -21,10 +28,36 @@ const BASE_URL = "https://image.tmdb.org/t/p/original";
 //   vote_count: 14395,
 // };
 export default function MovieDetails() {
-  // use route
+  const dispatch = useDispatch();
+  const toast = useToast();
+  const listMovies = useSelector(selectListMovies);
+  const [isInList, setIsInList] = useState(false);
   const route = useRoute();
   const movie = route.params.movie;
 
+  const handleAddToList = () => {
+    dispatch(addToList(movie));
+    toast.show("Added to List", {
+      type: "success",
+      placement: "top",
+      duration: 2000,
+    });
+  };
+
+  const handleRemoveFromList = () => {
+    dispatch(removeFromList(movie));
+    toast.show("Removed from List", {
+      type: "danger",
+      placement: "top",
+      duration: 2000,
+    });
+  };
+
+  useEffect(() => {
+    listMovies.filter((listMovie) => listMovie.id === movie.id).length > 0
+      ? setIsInList(true)
+      : setIsInList(false);
+  }, [isInList, listMovies]);
   return (
     <View style={styles.container}>
       <Image
@@ -36,7 +69,6 @@ export default function MovieDetails() {
         {movie.name || movie.title}
       </Text>
       <LinearGradient
-        // Background Linear Gradient
         colors={["rgba(0,0,0,0)", "rgba(0,0,0,.7)", "rgba(0,0,0,1)"]}
         style={styles.fadeBanner}
       />
@@ -46,13 +78,17 @@ export default function MovieDetails() {
         </View>
         <AntDesign name='star' size={16} color='#e7ab02' />
         <Text style={styles.review}>{movie.vote_average}</Text>
-        <Text style={styles.reviewCount}>{`(${
-          (movie.vote_count / 1000).toFixed(0) + "k reviews"
-        })`}</Text>
+        <Text style={styles.reviewCount}>
+          {`(${
+            movie.vote_count > 1000
+              ? (movie.vote_count / 1000).toFixed(0) + "k reviews"
+              : movie.vote_count + " reviews"
+          })`}
+        </Text>
       </View>
       <View style={styles.infoContainer}>
         <Text style={[styles.text, styles.airDate]}>
-          Air Date: {movie.first_air_date}
+          Air Date: {movie.first_air_date || movie.release_date}
         </Text>
         <Text style={[styles.text, styles.language]}>
           Language: {movie.original_language}
@@ -65,8 +101,15 @@ export default function MovieDetails() {
         <Text style={[styles.text, styles.genre]}>Horror</Text>
       </View>
       <View style={styles.btnContainer}>
-        <TouchableOpacity style={styles.btn}>
-          <Text style={styles.text}> Add To List </Text>
+        <TouchableOpacity
+          style={styles.btn}
+          onPress={() =>
+            isInList ? handleRemoveFromList() : handleAddToList()
+          }
+        >
+          <Text style={styles.text}>
+            {isInList ? "Remove From List" : "Add To List"}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.btn, styles.watchNow]}>
           <Text style={[styles.text, { color: "#EB1D36" }]}>Watch Now </Text>
@@ -139,7 +182,7 @@ const styles = StyleSheet.create({
   },
   heading: {
     position: "absolute",
-    top: "20%",
+    top: "17%",
     left: "5%",
     fontSize: 24,
     fontWeight: "bold",

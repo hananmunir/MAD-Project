@@ -4,11 +4,25 @@ import { Searchbar } from "react-native-paper";
 import axios from "../utils/axios";
 import requests from "../utils/requests";
 import MovieListCard from "../Components/MovieListCard";
-
+import { useFonts } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
+import { Poppins_400Regular } from "@expo-google-fonts/poppins";
 export default function SearchScreen() {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [searchResults, setSearchResults] = React.useState([]);
   const onChangeSearch = (query) => setSearchQuery(query);
+  const [fontsLoaded] = useFonts({
+    Poppins_400Regular,
+  });
+  const onLayoutRootView = React.useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
 
   const handleSearch = async () => {
     console.log("Going to search");
@@ -18,7 +32,10 @@ export default function SearchScreen() {
   };
 
   return (
-    <View style={{ backgroundColor: "#000", flex: 1 }}>
+    <View
+      style={{ backgroundColor: "#000", flex: 1 }}
+      onLayout={onLayoutRootView}
+    >
       <Searchbar
         placeholder='Search'
         onChangeText={onChangeSearch}
@@ -28,6 +45,7 @@ export default function SearchScreen() {
         iconColor='#fff'
         inputStyle={{ color: "#fff" }}
         elevation={2}
+        placeholderTextColor={"#fff"}
       />
 
       <ScrollView>
